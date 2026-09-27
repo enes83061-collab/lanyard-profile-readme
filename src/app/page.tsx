@@ -23,16 +23,6 @@ export default function Home() {
     const avatarHash = data.data.discord_user.avatar;
     const isAnimated = avatarHash.startsWith('a_');
     const ext = isAnimated ? 'gif' : 'png';
-      // Discord Profil Resmi Çekme
-useEffect(() => {
-  fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-    .then((res) => res.json())
-    .then((data: any) => {
-      if (data?.data?.discord_user?.avatar) {
-        const avatarHash = data.data.discord_user.avatar;
-        const isAnimated = avatarHash.startsWith('a_');
-        const ext = isAnimated ? 'gif' : 'png';
-        // buradaki alt kodlar devam ediyor...
           setAvatarUrl(
             `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${avatarHash}.${ext}?size=256`
           );
