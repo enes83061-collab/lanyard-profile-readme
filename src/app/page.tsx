@@ -1,8 +1,4 @@
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Enes Wong | Discord', // <-- Sekmede/Sitede görünecek isim
-};
+'use client';
 
 export default function Home() {
   return (
@@ -15,29 +11,30 @@ export default function Home() {
       height: '100vh',
       width: '100vw',
       margin: 0,
-      position: 'relative'
+      position: 'relative',
+      fontFamily: 'sans-serif'
     }}>
-      {/* Sol Üst Başlık / Site Adı */}
+      {/* Sol Üstteki Site İsmi */}
       <div style={{
         position: 'absolute',
-        top: '20px',
-        left: '20px',
+        top: '24px',
+        left: '24px',
         color: '#ffffff',
-        fontFamily: 'sans-serif',
-        fontSize: '18px',
-        fontWeight: 'bold',
-        opacity: 0.8
+        fontSize: '20px',
+        fontWeight: '600',
+        letterSpacing: '0.5px',
+        opacity: 0.9
       }}>
         eneswong.7
       </div>
 
-      {/* Ortadaki Büyütülmüş Discord Kartı */}
+      {/* Ortadaki Discord Kartı */}
       <a 
         href="https://discord.com/users/1532683555631665166" 
         target="_blank" 
         rel="noreferrer"
         style={{
-          transform: 'scale(1.2)', // Kartı biraz büyütür
+          transform: 'scale(1.15)',
           transition: 'transform 0.2s ease'
         }}
       >
