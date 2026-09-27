@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
   const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Rastgele/Ses ritmine göre oynayan equalizer efekti
   useEffect(() => {
     const interval = setInterval(() => {
       setAudioHeights(
@@ -16,11 +17,16 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const toggleSound = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
     <div
       style={{
-        backgroundColor: '#0a0c10',
-        backgroundImage: 'radial-gradient(circle at center, rgba(16, 22, 34, 0.8) 0%, rgba(5, 7, 10, 0.95) 100%)',
         height: '100vh',
         width: '100vw',
         margin: 0,
@@ -32,39 +38,85 @@ export default function Home() {
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
-      {/* Ortadaki Büyük Profil Kartı */}
+      {/* Arka Plan Videosu */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted={isMuted}
+        playsInline
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 1,
+          filter: 'brightness(0.5)',
+        }}
+      >
+        <source src="/background.mp4" type="video/mp4" />
+      </video>
+
+      {/* Ses Aç/Kapat Butonu */}
+      <button
+        onClick={toggleSound}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 20,
+          backgroundColor: 'rgba(22, 27, 34, 0.8)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: '#fff',
+          padding: '10px 16px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: '600',
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        {isMuted ? '🔇 Sesi Aç' : '🔊 Sesi Kapat'}
+      </button>
+
+      {/* Ortadaki Profil Kartı */}
       <div
         style={{
-          backgroundColor: 'rgba(22, 27, 34, 0.75)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: '20px',
+          backgroundColor: 'rgba(22, 27, 34, 0.82)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: '24px',
           padding: '32px 28px',
           width: '380px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8)',
           zIndex: 10,
         }}
       >
-        {/* Büyütülmüş Avatar */}
+        {/* Discord Avatar */}
         <div style={{ position: 'relative', marginBottom: '16px' }}>
           <img
-            src="https://lanyard.cnrad.dev/api/1532683555631665166"
+            src="https://api.lanyard.rest/1532683555631665166/avatar"
             alt="Discord Avatar"
             style={{
-              width: '120px',
-              height: '120px',
+              width: '110px',
+              height: '110px',
               borderRadius: '50%',
               objectFit: 'cover',
               border: '3px solid #5865F2',
-              boxShadow: '0 0 20px rgba(88, 101, 242, 0.4)',
+              boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
             }}
           />
         </div>
 
-        {/* Kullanıcı Adı ve Rozetler */}
+        {/* Kullanıcı Adı ve Rozet */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
           <h2 style={{ color: '#ffffff', margin: 0, fontSize: '24px', fontWeight: '700' }}>
             eneswong.7
@@ -84,78 +136,73 @@ export default function Home() {
           </span>
         </div>
 
-        {/* İsim Altındaki Sosyal Medya & Profil Linkleri */}
+        {/* Sosyal Medya Linkleri */}
         <div
           style={{
             display: 'flex',
             gap: '12px',
-            marginBottom: '24px',
+            marginBottom: '20px',
             width: '100%',
             justifyContent: 'center',
           }}
         >
-          {/* GitHub Linki */}
           <a
             href="https://github.com/enes83061-collab"
             target="_blank"
             rel="noreferrer"
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               color: '#f0f6fc',
-              padding: '8px 14px',
+              padding: '8px 16px',
               borderRadius: '10px',
               textDecoration: 'none',
               fontSize: '13px',
               fontWeight: '600',
-              transition: 'all 0.2s',
             }}
           >
             GitHub
           </a>
 
-          {/* Discord Linki */}
           <a
             href="https://discord.com/users/1532683555631665166"
             target="_blank"
             rel="noreferrer"
             style={{
-              backgroundColor: 'rgba(88, 101, 242, 0.15)',
-              border: '1px solid rgba(88, 101, 242, 0.3)',
+              backgroundColor: 'rgba(88, 101, 242, 0.2)',
+              border: '1px solid rgba(88, 101, 242, 0.4)',
               color: '#5865f2',
-              padding: '8px 14px',
+              padding: '8px 16px',
               borderRadius: '10px',
               textDecoration: 'none',
               fontSize: '13px',
               fontWeight: '600',
-              transition: 'all 0.2s',
             }}
           >
             Discord
           </a>
 
-          {/* Steam Linki */}
+          {/* STEAM LINKIN BURADA */}
           <a
-            href="https://steamcommunity.com" // Kendi Steam profil linkinle değiştirebilirsin kanka
+            href="https://steamcommunity.com/id/BURAYA_STEAM_KULLANICI_ADINI_YAZ"
             target="_blank"
             rel="noreferrer"
             style={{
-              backgroundColor: 'rgba(23, 26, 33, 0.6)',
-              border: '1px solid rgba(102, 192, 244, 0.3)',
+              backgroundColor: 'rgba(23, 26, 33, 0.8)',
+              border: '1px solid rgba(102, 192, 244, 0.4)',
               color: '#66c0f4',
-              padding: '8px 14px',
+              padding: '8px 16px',
               borderRadius: '10px',
               textDecoration: 'none',
               fontSize: '13px',
               fontWeight: '600',
-              transition: 'all 0.2s',
             }}
           >
             Steam
           </a>
         </div>
 
-        {/* Canlı Aktivite / Lanyard Banner */}
+        {/* Canlı Aktivite */}
         <div style={{ width: '100%' }}>
           <img
             src="https://lanyard.cnrad.dev/api/1532683555631665166?hideUsers=true"
@@ -165,7 +212,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sol Alt Equalizer (Mavi / Mor Tonlarında) */}
+      {/* Sol Alt Equalizer */}
       <div
         style={{
           position: 'absolute',
@@ -175,6 +222,7 @@ export default function Home() {
           alignItems: 'flex-end',
           gap: '4px',
           padding: '0 20px',
+          zIndex: 10,
         }}
       >
         {audioHeights.slice(0, 12).map((height, i) => (
@@ -186,13 +234,12 @@ export default function Home() {
               background: 'linear-gradient(to top, #3b82f6, #8b5cf6)',
               borderRadius: '4px 4px 0 0',
               transition: 'height 0.15s ease',
-              boxShadow: '0 0 10px rgba(139, 92, 246, 0.5)',
             }}
           />
         ))}
       </div>
 
-      {/* Sağ Alt Equalizer (Mavi / Mor Tonlarında) */}
+      {/* Sağ Alt Equalizer */}
       <div
         style={{
           position: 'absolute',
@@ -202,6 +249,7 @@ export default function Home() {
           alignItems: 'flex-end',
           gap: '4px',
           padding: '0 20px',
+          zIndex: 10,
         }}
       >
         {audioHeights.slice(12, 24).map((height, i) => (
@@ -213,7 +261,6 @@ export default function Home() {
               background: 'linear-gradient(to top, #8b5cf6, #ec4899)',
               borderRadius: '4px 4px 0 0',
               transition: 'height 0.15s ease',
-              boxShadow: '0 0 10px rgba(236, 72, 153, 0.5)',
             }}
           />
         ))}
