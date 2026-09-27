@@ -1,16 +1,107 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eneswong.7</title>
+    <!-- Discord Lanyard Entegrasyonu ve Modern Tasarım İçin Stil -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000; /* Simsiyah Arka Plan */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Profil Konteyneri */
+        #root {
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Özel Müzik Kontrolcüsü Tasarımı */
+        .music-controller {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(25, 25, 25, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-controller button {
+            background: #7289da;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .music-controller button:hover {
+            background: #5b6eae;
+        }
+
+        .music-info {
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Profil Alanı -->
     <div id="root"></div>
-    
-    <!-- Arka Plan Videosu -->
-    <video id="bg-video" autoplay loop muted playsinline>
-        <source src="./background.mp4" type="video/mp4">
-    </video>
+
+    <!-- Ortam Müziği İçin Gizli Audio Elementi ve Özel Kontrolcüsü -->
+    <audio id="bg-music" loop>
+        <source src="./muzik.mp3" type="audio/mp3">
+    </audio>
+
+    <div class="music-controller">
+        <div class="music-info" id="music-status">Ambient Müzik</div>
+        <button id="music-toggle-btn" onclick="toggleMusic()">Oynat</button>
+    </div>
+
+    <!-- Müzik Kontrol Mantığı -->
+    <script>
+        const music = document.getElementById('bg-music');
+        const btn = document.getElementById('music-toggle-btn');
+        const statusText = document.getElementById('music-status');
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                btn.innerText = "Durdur";
+                statusText.innerText = "Çalıyor...";
+            } else {
+                music.pause();
+                btn.innerText = "Oynat";
+                statusText.innerText = "Duraklatıldı";
+            }
+        }
+    </script>
 </body>
 </html>
