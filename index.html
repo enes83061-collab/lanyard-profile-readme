@@ -3,19 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord Activity</title>
+  <title>eneswong.7 Profile</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      background-color: #0d1117;
+      height: 100vh;
+      width: 100vw;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      position: relative;
+      overflow: hidden;
+      background-color: #0d1117;
+      background-image: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    video#bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      filter: brightness(0.45);
+    }
+    .sound-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 20;
+      background-color: rgba(22, 27, 34, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .card {
+      background-color: rgba(22, 27, 34, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 32px 28px;
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+      z-index: 10;
+    }
+    .avatar-container {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 16px;
+    }
+    .avatar-img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #5865F2;
+      box-shadow: 0 0 25px rgba(88, 101, 242, 0.5);
+    }
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .username {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .badge {
+      background-color: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .links {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+    .link-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .btn-github {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f0f6fc;
+    }
+    .btn-discord {
+      background-color: rgba(88, 101, 242, 0.2);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      color: #5865f2;
+    }
+    .btn-steam {
+      background-color: rgba(23, 26, 33, 0.8);
+      border: 1px solid rgba(102, 192, 244, 0.4);
+      color: #66c0f4;
+    }
+    .bio {
+      color: #8b949e;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .lanyard-card {
+      width: 100%;
+      border-radius: 12px;
     }
   </style>
 </head>
 <body>
-  <a href="https://discord.com/users/1532683555631665166"><img src="https://lanyard.cnrad.dev/api/1532683555631665166" alt="Discord Presence" /></a>
+
+  <!-- Arka Plan Videosu -->
+  <video id="bg-video" autoPlay loop muted playsInline>
+    <source src="/background.mp4" type="video/mp4">
+  </video>
+
+  <!-- Ses Butonu -->
+  <button class="sound-btn" onclick="toggleMute()">🔇 Sesi Aç</button>
+
+  <!-- Profil Kartı -->
+  <div class="card">
+    <div class="avatar-container">
+      <img id="avatar" class="avatar-img" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
+    </div>
+
+    <div class="user-header">
+      <h2 class="username">eneswong.7</h2>
+      <span class="badge">💎 GUNS</span>
+    </div>
+
+    <div class="links">
+      <a class="link-btn btn-github" href="https://github.com/enes83061-collab" target="_blank">GitHub</a>
+      <a class="link-btn btn-discord" href="https://discord.com/users/1532683555631665166" target="_blank">Discord</a>
+      <a class="link-btn btn-steam" href="https://steamcommunity.com/id/enes61ts7" target="_blank">Steam</a>
+    </div>
+
+    <!-- Biyo Metni -->
+    <div class="bio">yazılım öğreniyorum...</div>
+
+    <!-- Canlı Aktivite Kartı -->
+    <img class="lanyard-card" src="https://lanyard.cnrad.dev/api/1532683555631665166?hideUsers=true" alt="Lanyard Activity">
+  </div>
+
+  <script>
+    // Discord Avatarını Çekme
+    const DISCORD_ID = '1532683555631665166';
+    fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data?.data?.discord_user?.avatar) {
+          const hash = data.data.discord_user.avatar;
+          const ext = hash.startsWith('a_') ? 'gif' : 'png';
+          document.getElementById('avatar').src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${hash}.${ext}?size=256`;
+        }
+      });
+
+    // Ses Aç/Kapat
+    function toggleMute() {
+      const video = document.getElementById('bg-video');
+      const btn = document.querySelector('.sound-btn');
+      video.muted = !video.muted;
+      btn.innerText = video.muted ? '🔇 Sesi Aç' : '🔊 Sesi Kapat';
+    }
+  </script>
 </body>
 </html>
