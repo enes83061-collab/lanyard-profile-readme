@@ -19,7 +19,7 @@ export default function Home() {
   useEffect(() => {
 fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
  .then((res) => res.json())
- .then((data: any) => {
+ .then((data: unknown) => {
   if (data?.data?.discord_user?.avatar) {
     const avatarHash = data.data.discord_user.avatar;
     const isAnimated = avatarHash.startsWith('a_');
