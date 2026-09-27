@@ -1,194 +1,289 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eneswong.7 Profile</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      background-color: #0d1117;
-      background-image: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    video#bg-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-      filter: brightness(0.45);
-    }
-    .sound-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 20;
-      background-color: rgba(22, 27, 34, 0.85);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .card {
-      background-color: rgba(22, 27, 34, 0.85);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      padding: 32px 28px;
-      width: 380px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
-      z-index: 10;
-    }
-    .avatar-container {
-      width: 110px;
-      height: 110px;
-      margin-bottom: 16px;
-    }
-    .avatar-img {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #5865F2;
-      box-shadow: 0 0 25px rgba(88, 101, 242, 0.5);
-    }
-    .user-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .username {
-      color: #ffffff;
-      font-size: 24px;
-      font-weight: 700;
-    }
-    .badge {
-      background-color: rgba(168, 85, 247, 0.2);
-      color: #c084fc;
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .links {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      width: 100%;
-      justify-content: center;
-    }
-    .link-btn {
-      padding: 8px 16px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .btn-github {
-      background-color: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #f0f6fc;
-    }
-    .btn-discord {
-      background-color: rgba(88, 101, 242, 0.2);
-      border: 1px solid rgba(88, 101, 242, 0.4);
-      color: #5865f2;
-    }
-    .btn-steam {
-      background-color: rgba(23, 26, 33, 0.8);
-      border: 1px solid rgba(102, 192, 244, 0.4);
-      color: #66c0f4;
-    }
-    .bio {
-      color: #8b949e;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .lanyard-card {
-      width: 100%;
-      border-radius: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eneswong.7 Profile</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background-color: #0d1117;
+            background-image: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #fff;
+        }
+        video#bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            filter: brightness(0.45);
+        }
+        .sound-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sound-control span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #d1d5db;
+        }
+        .sound-control input[type="range"] {
+            width: 80px;
+            accent-color: #a855f7;
+            cursor: pointer;
+        }
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 380px;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .avatar-container {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-info h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .badge {
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(168, 85, 247, 0.2);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 9999px;
+        }
+        .social-links {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .social-links a {
+            flex: 1;
+            text-align: center;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.05);
+            hover: background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .social-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .activity-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+            display: none; /* Varsayılan gizli, aktivite varsa açılacak */
+        }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(168, 85, 247, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .activity-details {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            text-align: left;
+        }
+        .activity-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #e5e7eb;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .activity-state {
+            font-size: 11px;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Arka Plan Videosu -->
-  <video id="bg-video" autoPlay loop muted playsInline>
-    <source src="/background.mp4" type="video/mp4">
-  </video>
+    <!-- ARKA PLAN VİDEOSU -->
+    <video id="bg-video" autoplay loop muted playsinline>
+        <source src="/background.mp4" type="video/mp4">
+    </video>
 
-  <!-- Ses Butonu -->
-  <button class="sound-btn" onclick="toggleMute()">🔇 Sesi Aç</button>
+    <!-- ARKA PLAN MÜZİĞİ -->
+    <audio id="bg-audio" src="/music.mp3" loop></audio>
 
-  <!-- Profil Kartı -->
-  <div class="card">
-    <div class="avatar-container">
-      <img id="avatar" class="avatar-img" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
+    <!-- SAĞ ÜST SES KONTROLÜ -->
+    <div class="sound-control">
+        <span id="volume-text">SES: %50</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
     </div>
 
-    <div class="user-header">
-      <h2 class="username">eneswong.7</h2>
-      <span class="badge">💎 GUNS</span>
+    <!-- ORTA KART CONTAINER -->
+    <div class="card">
+        <!-- DISCORD AVATAR -->
+        <div class="avatar-container">
+            <img id="user-avatar" src="" alt="Profile Avatar">
+        </div>
+
+        <!-- KULLANICI ADI VE BADGE -->
+        <div class="user-info">
+            <h1>eneswong.7</h1>
+            <span class="badge">💎 GUNS</span>
+        </div>
+
+        <!-- SOSYAL MEDYA BUTONLARI -->
+        <div class="social-links">
+            <a href="https://github.com" target="_blank">GitHub</a>
+            <a href="https://discord.com" target="_blank">Discord</a>
+            <a href="https://steamcommunity.com" target="_blank">Steam</a>
+        </div>
+
+        <!-- DİSCORD AKTİVİTE KARTI -->
+        <div id="activity-box" class="activity-card">
+            <div class="activity-icon">🎮</div>
+            <div class="activity-details">
+                <span id="activity-name" class="activity-name">Oyun</span>
+                <span id="activity-state" class="activity-state">Aktif</span>
+            </div>
+        </div>
     </div>
 
-    <div class="links">
-      <a class="link-btn btn-github" href="https://github.com/enes83061-collab" target="_blank">GitHub</a>
-      <a class="link-btn btn-discord" href="https://discord.com/users/1532683555631665166" target="_blank">Discord</a>
-      <a class="link-btn btn-steam" href="https://steamcommunity.com/id/enes61ts7" target="_blank">Steam</a>
-    </div>
+    <script>
+        const DISCORD_ID = '1532683555631665166';
+        
+        // Müzik ve Ses Kontrolü
+        const audio = document.getElementById('bg-audio');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeText = document.getElementById('volume-text');
 
-    <!-- Biyo Metni -->
-    <div class="bio">yazılım öğreniyorum...</div>
+        // Kullanıcı ekrana ilk tıkladığında müziği başlat (Tarayıcı engeline takılmamak için)
+        document.body.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play().catch(() => {});
+            }
+        }, { once: true });
 
-    <!-- Canlı Aktivite Kartı -->
-    <img class="lanyard-card" src="https://lanyard.cnrad.dev/api/1532683555631665166?hideUsers=true" alt="Lanyard Activity">
-  </div>
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = parseFloat(e.target.value);
+            audio.volume = vol;
+            volumeText.innerText = `SES: %${Math.round(vol * 100)}`;
+        });
 
-  <script>
-    // Discord Avatarını Çekme
-    const DISCORD_ID = '1532683555631665166';
-    fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data?.data?.discord_user?.avatar) {
-          const hash = data.data.discord_user.avatar;
-          const ext = hash.startsWith('a_') ? 'gif' : 'png';
-          document.getElementById('avatar').src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${hash}.${ext}?size=256`;
+        // Lanyard API ile Discord Durumu Çekme
+        async function fetchLanyard() {
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
+                const response = await res.json();
+
+                if (response.success && response.data) {
+                    const data = response.data;
+                    
+                    // Avatar Ayarlama
+                    const user = data.discord_user;
+                    const avatarImg = document.getElementById('user-avatar');
+                    if (user.avatar) {
+                        const ext = user.avatar.startsWith('a_') ? 'gif' : 'png';
+                        avatarImg.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${user.avatar}.${ext}?size=256`;
+                    } else {
+                        avatarImg.src = `https://unavatar.io/discord/${DISCORD_ID}`;
+                    }
+
+                    // Aktivite (Oynadığı Oyun vb.) Kontrolü
+                    const activityBox = document.getElementById('activity-box');
+                    const activityName = document.getElementById('activity-name');
+                    const activityState = document.getElementById('activity-state');
+
+                    if (data.activities && data.activities.length > 0) {
+                        const primaryActivity = data.activities[0];
+                        activityName.innerText = primaryActivity.name;
+                        activityState.innerText = primaryActivity.details || primaryActivity.state || 'Aktif';
+                        activityBox.style.display = 'flex';
+                    } else {
+                        activityBox.style.display = 'none';
+                    }
+                }
+            } catch (err) {
+                console.error('Lanyard yüklenemedi:', err);
+                document.getElementById('user-avatar').src = `https://unavatar.io/discord/${DISCORD_ID}`;
+            }
         }
-      });
 
-    // Ses Aç/Kapat
-    function toggleMute() {
-      const video = document.getElementById('bg-video');
-      const btn = document.querySelector('.sound-btn');
-      video.muted = !video.muted;
-      btn.innerText = video.muted ? '🔇 Sesi Aç' : '🔊 Sesi Kapat';
-    }
-  </script>
+        fetchLanyard();
+        setInterval(fetchLanyard, 5000);
+    </script>
 </body>
 </html>
