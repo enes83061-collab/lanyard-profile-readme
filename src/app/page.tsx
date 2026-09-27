@@ -171,7 +171,7 @@ export default function Home() {
           style={{
             display: 'flex',
             gap: '12px',
-            marginBottom: '20px',
+            marginBottom: '14px',
             width: '100%',
             justifyContent: 'center',
           }}
@@ -229,6 +229,20 @@ export default function Home() {
           >
             Steam
           </a>
+        </div>
+
+        {/* Biyo / Açıklama Metni */}
+        <div
+          style={{
+            color: '#8b949e',
+            fontSize: '14px',
+            fontWeight: '500',
+            marginBottom: '20px',
+            textAlign: 'center',
+            letterSpacing: '0.3px',
+          }}
+        >
+          yazılım öğreniyorum...
         </div>
 
         {/* Canlı Aktivite Kartı */}
