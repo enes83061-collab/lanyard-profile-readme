@@ -1,156 +1,208 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+interface LanyardData {
+  discord_user: {
+    username: string;
+    discriminator: string;
+    avatar: string;
+    id: string;
+  };
+  discord_status: string;
+  spotify?: {
+    song: string;
+    artist: string;
+    album_art_url: string;
+  };
+}
 
 export default function Home() {
-  const [lanyardData, setLanyardData] = useState<any>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [volume, setVolume] = useState<number>(0.5);
+  const [lanyard, setLanyard] = useState<LanyardData | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const DISCORD_ID = '1532683555631665166';
+  const discordId = "1532683555631665166"; // Senin Discord ID'n
 
   useEffect(() => {
-    const fetchLanyard = () => {
-      fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-        .then((res) => res.json())
-        .then((response: any) => {
-          if (response?.success && response?.data) {
-            setLanyardData(response.data);
-            const userData = response.data.discord_user;
-            if (userData?.avatar) {
-              const avatarHash = userData.avatar;
-              const isAnimated = avatarHash.startsWith('a_');
-              const ext = isAnimated ? 'gif' : 'png';
-              setAvatarUrl(
-                `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${avatarHash}.${ext}?size=256`
-              );
-            } else {
-              setAvatarUrl(`https://unavatar.io/discord/${DISCORD_ID}`);
-            }
-          }
+    // Lanyard API Bağlantısı (Canlı Discord Durumu)
+    const ws = new WebSocket('wss://api.lanyard.rest/socket');
+
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          op: 2,
+          d: {
+            subscribe_to_id: discordId,
+          },
         })
-        .catch(() => {
-          setAvatarUrl(`https://unavatar.io/discord/${DISCORD_ID}`);
-        });
+      );
     };
 
-    fetchLanyard();
-    const interval = setInterval(fetchLanyard, 5000);
-    return () => clearInterval(interval);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE') {
+        if (data.d) setLanyard(data.d);
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
   }, []);
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
+  const toggleMusic = () => {
     if (audioRef.current) {
-      audioRef.current.volume = newVolume;
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
     }
   };
 
-  const primaryActivity = lanyardData?.activities?.[0];
-
   return (
-    <main className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-black text-white">
-      {/* ARKA PLAN VİDEOSU */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-40"
-      >
-        <source src="/background.mp4" type="video/mp4" />
-      </video>
+    <main style={styles.main}>
+      {/* Simsiyah Arka Plan & Profil Konteyneri */}
+      <div style={styles.card}>
+        {lanyard && lanyard.discord_user ? (
+          <div style={styles.profileSection}>
+            <img
+              src={`https://cdn.discordapp.com/avatars/${lanyard.discord_user.id}/${lanyard.discord_user.avatar}.png`}
+              alt="Avatar"
+              style={styles.avatar}
+            />
+            <h1 style={styles.username}>{lanyard.discord_user.username}</h1>
+            <p style={styles.statusText}>
+              Durum: <span style={{ textTransform: 'capitalize', color: '#7289da' }}>{lanyard.discord_status}</span>
+            </p>
 
-      {/* ARKA PLAN MÜZİĞİ */}
-      <audio ref={audioRef} src="/music.mp3" loop />
-
-      {/* SAĞ ÜST SES KONTROLÜ */}
-      <div className="absolute top-5 right-5 z-20 flex items-center gap-3 bg-black/60 backdrop-blur-md p-3 rounded-xl border border-white/10">
-        <span className="text-xs font-semibold tracking-wider text-gray-300">
-          SES: %{Math.round(volume * 100)}
-        </span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={handleVolumeChange}
-          className="w-24 accent-purple-500 cursor-pointer"
-        />
+            {/* Spotify Varsa Göster */}
+            {lanyard.spotify && (
+              <div style={styles.spotifyBox}>
+                <p style={styles.spotifyTitle}>🎵 Dinliyor:</p>
+                <p style={styles.spotifySong}>{lanyard.spotify.song}</p>
+                <p style={styles.spotifyArtist}>{lanyard.spotify.artist}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p style={{ color: '#888' }}>Discord Verisi Yükleniyor...</p>
+        )}
       </div>
 
-      {/* ORTA KART CONTAINER */}
-      <div className="relative z-10 w-full max-w-md p-6 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-4">
-        {/* DISCORD AVATAR */}
-        <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-purple-500/50 shadow-lg shadow-purple-500/20">
-          {avatarUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={avatarUrl}
-              alt="Profile Avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-800 animate-pulse" />
-          )}
-        </div>
+      {/* Arka Plan Müziği İçin Audio */}
+      <audio ref={audioRef} src="/muzik.mp3" loop />
 
-        {/* KULLANICI ADI VE BADGE */}
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold tracking-wide">eneswong.7</h1>
-          <span className="px-2 py-0.5 text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full flex items-center gap-1">
-            💎 GUNS
-          </span>
-        </div>
-
-        {/* SOSYAL MEDYA BUTONLARI */}
-        <div className="flex gap-3 w-full justify-center mt-1">
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 text-xs font-medium bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
-          >
-            GitHub
-          </a>
-          <a
-            href="https://discord.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 text-xs font-medium bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 rounded-xl transition-all"
-          >
-            Discord
-          </a>
-          <a
-            href="https://steamcommunity.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 text-xs font-medium bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
-          >
-            Steam
-          </a>
-        </div>
-
-        {/* DİSCORD AKTİVİTE KARTI */}
-        {primaryActivity && (
-          <div className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3 mt-2">
-            <div className="w-10 h-10 rounded-lg bg-purple-600/30 flex items-center justify-center font-bold text-sm">
-              🎮
-            </div>
-            <div className="flex flex-col text-left overflow-hidden">
-              <span className="text-xs font-bold text-gray-200 truncate">
-                {primaryActivity.name}
-              </span>
-              <span className="text-[11px] text-gray-400 truncate">
-                {primaryActivity.details || primaryActivity.state || 'Aktif'}
-              </span>
-            </div>
-          </div>
-        )}
+      {/* Özel Müzik Kontrolcüsü */}
+      <div style={styles.musicController}>
+        <span style={styles.musicInfo}>{isPlaying ? "Müzik Çalıyor 🎶" : "Ambient Müzik"}</span>
+        <button onClick={toggleMusic} style={styles.button}>
+          {isPlaying ? "Durdur" : "Oynat"}
+        </button>
       </div>
     </main>
   );
 }
+
+// Inline Stiller (Harici CSS ile uğraşmamak için)
+const styles: { [key: string]: React.CSSProperties } = {
+  main: {
+    backgroundColor: '#000000',
+    color: '#ffffff',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  card: {
+    background: 'rgba(18, 18, 18, 0.7)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    padding: '30px',
+    borderRadius: '16px',
+    textAlign: 'center' as const,
+    width: '320px',
+    backdropFilter: 'blur(12px)',
+    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+    zIndex: 10,
+  },
+  profileSection: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: '90px',
+    height: '90px',
+    borderRadius: '50%',
+    border: '2px solid #7289da',
+    marginBottom: '15px',
+  },
+  username: {
+    fontSize: '22px',
+    fontWeight: 'bold',
+    marginBottom: '8px',
+  },
+  statusText: {
+    fontSize: '14px',
+    color: '#b9bbbe',
+    marginBottom: '15px',
+  },
+  spotifyBox: {
+    background: 'rgba(29, 185, 84, 0.1)',
+    border: '1px solid rgba(29, 185, 84, 0.3)',
+    padding: '10px',
+    borderRadius: '8px',
+    width: '100%',
+    marginTop: '10px',
+  },
+  spotifyTitle: {
+    fontSize: '11px',
+    color: '#1db954',
+    fontWeight: 'bold',
+    marginBottom: '4px',
+  },
+  spotifySong: {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  spotifyArtist: {
+    fontSize: '12px',
+    color: '#b9bbbe',
+  },
+  musicController: {
+    position: 'absolute',
+    bottom: '30px',
+    right: '30px',
+    background: 'rgba(25, 25, 25, 0.8)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    padding: '12px 20px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    zIndex: 100,
+    backdropFilter: 'blur(10px)',
+  },
+  musicInfo: {
+    fontSize: '14px',
+    color: '#b9bbbe',
+  },
+  button: {
+    background: '#7289da',
+    border: 'none',
+    color: 'white',
+    padding: '8px 14px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: '0.2s',
+  },
+};
