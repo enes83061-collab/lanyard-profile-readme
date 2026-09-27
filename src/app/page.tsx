@@ -5,8 +5,32 @@ import { useEffect, useState, useRef } from 'react';
 export default function Home() {
   const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
   const [isMuted, setIsMuted] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const DISCORD_ID = '1532683555631665166';
+
+  // Discord Avatarını Lanyard API'den Canlı Çekme
+  useEffect(() => {
+    fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?.discord_user?.avatar) {
+          const avatarHash = data.data.discord_user.avatar;
+          setAvatarUrl(
+            `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${avatarHash}.png?size=256`
+          );
+        } else {
+          // Fallback avatar
+          setAvatarUrl(`https://lanyard.cnrad.dev/api/${DISCORD_ID}`);
+        }
+      })
+      .catch(() => {
+        setAvatarUrl(`https://lanyard.cnrad.dev/api/${DISCORD_ID}`);
+      });
+  }, []);
+
+  // Equalizer Efekti
   useEffect(() => {
     const interval = setInterval(() => {
       setAudioHeights(
@@ -35,6 +59,7 @@ export default function Home() {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
+        backgroundColor: '#0a0c10',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
@@ -53,13 +78,13 @@ export default function Home() {
           height: '100%',
           objectFit: 'cover',
           zIndex: 1,
-          filter: 'brightness(0.5)',
+          filter: 'brightness(0.55)',
         }}
       >
         <source src="/background.mp4" type="video/mp4" />
       </video>
 
-      {/* Ses Aç/Kapat Butonu */}
+      {/* Sol Üst Ses Aç/Kapat Butonu */}
       <button
         onClick={toggleSound}
         style={{
@@ -67,7 +92,7 @@ export default function Home() {
           top: '20px',
           left: '20px',
           zIndex: 20,
-          backgroundColor: 'rgba(22, 27, 34, 0.8)',
+          backgroundColor: 'rgba(22, 27, 34, 0.85)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
           color: '#fff',
@@ -87,7 +112,7 @@ export default function Home() {
       {/* Ortadaki Profil Kartı */}
       <div
         style={{
-          backgroundColor: 'rgba(22, 27, 34, 0.82)',
+          backgroundColor: 'rgba(22, 27, 34, 0.85)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.12)',
           borderRadius: '24px',
@@ -96,28 +121,40 @@ export default function Home() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
           zIndex: 10,
         }}
       >
-        {/* Discord Avatar */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <img
-            src="https://api.lanyard.rest/1532683555631665166/avatar"
-            alt="Discord Avatar"
-            style={{
-              width: '110px',
-              height: '110px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '3px solid #5865F2',
-              boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
-            }}
-          />
+        {/* Düzeltilmiş Büyütülmüş Avatar */}
+        <div style={{ position: 'relative', marginBottom: '16px', width: '120px', height: '120px' }}>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Profile"
+              style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '3px solid #5865F2',
+                boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                backgroundColor: '#1e232a',
+                border: '3px solid #5865F2',
+              }}
+            />
+          )}
         </div>
 
         {/* Kullanıcı Adı ve Rozet */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
           <h2 style={{ color: '#ffffff', margin: 0, fontSize: '24px', fontWeight: '700' }}>
             eneswong.7
           </h2>
@@ -201,7 +238,7 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Canlı Aktivite */}
+        {/* Canlı Aktivite Kartı */}
         <div style={{ width: '100%' }}>
           <img
             src="https://lanyard.cnrad.dev/api/1532683555631665166?hideUsers=true"
