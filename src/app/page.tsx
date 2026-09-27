@@ -182,9 +182,8 @@ export default function Home() {
             Discord
           </a>
 
-          {/* STEAM LINKIN BURADA */}
           <a
-            href="https://steamcommunity.com/id/BURAYA_STEAM_KULLANICI_ADINI_YAZ"
+            href="https://steamcommunity.com/id/enes61ts7"
             target="_blank"
             rel="noreferrer"
             style={{
