@@ -5,30 +5,9 @@ import { useEffect, useState, useRef } from 'react';
 export default function Home() {
   const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
   const [isMuted, setIsMuted] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const DISCORD_ID = '1532683555631665166';
-
-  // Discord Avatarını Lanyard API'den Canlı Çekme
-  useEffect(() => {
-    fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.data?.discord_user?.avatar) {
-          const avatarHash = data.data.discord_user.avatar;
-          setAvatarUrl(
-            `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${avatarHash}.png?size=256`
-          );
-        } else {
-          // Fallback avatar
-          setAvatarUrl(`https://lanyard.cnrad.dev/api/${DISCORD_ID}`);
-        }
-      })
-      .catch(() => {
-        setAvatarUrl(`https://lanyard.cnrad.dev/api/${DISCORD_ID}`);
-      });
-  }, []);
 
   // Equalizer Efekti
   useEffect(() => {
@@ -78,7 +57,7 @@ export default function Home() {
           height: '100%',
           objectFit: 'cover',
           zIndex: 1,
-          filter: 'brightness(0.55)',
+          filter: 'brightness(0.5)',
         }}
       >
         <source src="/background.mp4" type="video/mp4" />
@@ -125,32 +104,24 @@ export default function Home() {
           zIndex: 10,
         }}
       >
-        {/* Düzeltilmiş Büyütülmüş Avatar */}
-        <div style={{ position: 'relative', marginBottom: '16px', width: '120px', height: '120px' }}>
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt="Profile"
-              style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: '3px solid #5865F2',
-                boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                backgroundColor: '#1e232a',
-                border: '3px solid #5865F2',
-              }}
-            />
-          )}
+        {/* Yuvarlak Discord Avatarı */}
+        <div style={{ position: 'relative', marginBottom: '16px', width: '110px', height: '110px' }}>
+          <img
+            src={`https://lanyard.cnrad.dev/api/${DISCORD_ID}?hideActivity=true&hideStatus=true&hideProfile=true`}
+            alt="Avatar"
+            style={{
+              width: '110px',
+              height: '110px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '3px solid #5865F2',
+              boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
+            }}
+            onError={(e) => {
+              // Eğer Lanyard yüklenmezse varsayılan resim
+              (e.target as HTMLImageElement).src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+            }}
+          />
         </div>
 
         {/* Kullanıcı Adı ve Rozet */}
