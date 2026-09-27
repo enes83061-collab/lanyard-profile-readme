@@ -2,32 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-interface LanyardData {
-  discord_user: {
-    username: string;
-    avatar: string;
-    discriminator: string;
-    id: string;
-  };
-  activities: Array<{
-    name: string;
-    details?: string;
-    state?: string;
-    timestamps?: {
-      start?: number;
-    };
-    assets?: {
-      large_image?: string;
-      large_text?: string;
-      small_image?: string;
-      small_text?: string;
-    };
-  }>;
-  discord_status: string;
-}
-
 export default function Home() {
-  const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
+  const [lanyardData, setLanyardData] = useState<any>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [volume, setVolume] = useState<number>(0.5);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -38,8 +14,8 @@ export default function Home() {
     const fetchLanyard = () => {
       fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
         .then((res) => res.json())
-        .then((response) => {
-          if (response.success) {
+        .then((response: any) => {
+          if (response?.success && response?.data) {
             setLanyardData(response.data);
             const userData = response.data.discord_user;
             if (userData?.avatar) {
@@ -108,7 +84,7 @@ export default function Home() {
 
       {/* ORTA KART CONTAINER */}
       <div className="relative z-10 w-full max-w-md p-6 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-4">
-        {/* DISCORD AVATAR / STATUS */}
+        {/* DISCORD AVATAR */}
         <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-purple-500/50 shadow-lg shadow-purple-500/20">
           {avatarUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -158,7 +134,7 @@ export default function Home() {
           </a>
         </div>
 
-        {/* DİSCORD AKTİVİTE / OYUN DURUMU KARTI */}
+        {/* DİSCORD AKTİVİTE KARTI */}
         {primaryActivity && (
           <div className="w-full bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3 mt-2">
             <div className="w-10 h-10 rounded-lg bg-purple-600/30 flex items-center justify-center font-bold text-sm">
