@@ -5,9 +5,31 @@ import { useEffect, useState, useRef } from 'react';
 export default function Home() {
   const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
   const [isMuted, setIsMuted] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const DISCORD_ID = '1532683555631665166';
+
+  // Discord Avatarını Çekme
+  useEffect(() => {
+    fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?.discord_user?.avatar) {
+          const avatarHash = data.data.discord_user.avatar;
+          const isAnimated = avatarHash.startsWith('a_');
+          const ext = isAnimated ? 'gif' : 'png';
+          setAvatarUrl(
+            `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${avatarHash}.${ext}?size=256`
+          );
+        } else {
+          setAvatarUrl(`https://unavatar.io/discord/${DISCORD_ID}`);
+        }
+      })
+      .catch(() => {
+        setAvatarUrl(`https://unavatar.io/discord/${DISCORD_ID}`);
+      });
+  }, []);
 
   // Equalizer Efekti
   useEffect(() => {
@@ -38,7 +60,8 @@ export default function Home() {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: '#0a0c10',
+        backgroundColor: '#0d1117',
+        backgroundImage: 'radial-gradient(circle at center, #161b22 0%, #0d1117 100%)',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
@@ -57,13 +80,13 @@ export default function Home() {
           height: '100%',
           objectFit: 'cover',
           zIndex: 1,
-          filter: 'brightness(0.5)',
+          filter: 'brightness(0.45)',
         }}
       >
         <source src="/background.mp4" type="video/mp4" />
       </video>
 
-      {/* Sol Üst Ses Aç/Kapat Butonu */}
+      {/* Ses Aç/Kapat Butonu */}
       <button
         onClick={toggleSound}
         style={{
@@ -104,11 +127,11 @@ export default function Home() {
           zIndex: 10,
         }}
       >
-        {/* Yuvarlak Discord Avatarı */}
+        {/* Dairesel Profil Resmi (Avatar) */}
         <div style={{ position: 'relative', marginBottom: '16px', width: '110px', height: '110px' }}>
           <img
-            src={`https://lanyard.cnrad.dev/api/${DISCORD_ID}?hideActivity=true&hideStatus=true&hideProfile=true`}
-            alt="Avatar"
+            src={avatarUrl || `https://unavatar.io/discord/${DISCORD_ID}`}
+            alt="Profile Avatar"
             style={{
               width: '110px',
               height: '110px',
@@ -118,7 +141,6 @@ export default function Home() {
               boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
             }}
             onError={(e) => {
-              // Eğer Lanyard yüklenmezse varsayılan resim
               (e.target as HTMLImageElement).src = 'https://cdn.discordapp.com/embed/avatars/0.png';
             }}
           />
