@@ -1,16 +1,15 @@
-'use client';
+''use client';
 
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
   const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
-  const [isMuted, setIsMuted] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [avatarUrl, setAvatarUrl] = useState<string>('https://cdn.discordapp.com/embed/avatars/0.png');
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const DISCORD_ID = '1532683555631665166';
 
-  // Discord Avatarını Çekme
   useEffect(() => {
     fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
       .then((res) => res.json())
@@ -31,7 +30,6 @@ export default function Home() {
       });
   }, []);
 
-  // Equalizer Efekti
   useEffect(() => {
     const interval = setInterval(() => {
       setAudioHeights(
@@ -50,7 +48,7 @@ export default function Home() {
   };
 
   return (
-    <div
+    <main
       style={{
         height: '100vh',
         width: '100vw',
@@ -89,6 +87,7 @@ export default function Home() {
       {/* Ses Aç/Kapat Butonu */}
       <button
         onClick={toggleSound}
+        type="button"
         style={{
           position: 'absolute',
           top: '20px',
@@ -130,7 +129,7 @@ export default function Home() {
         {/* Dairesel Profil Resmi (Avatar) */}
         <div style={{ position: 'relative', marginBottom: '16px', width: '110px', height: '110px' }}>
           <img
-            src={avatarUrl || `https://unavatar.io/discord/${DISCORD_ID}`}
+            src={avatarUrl}
             alt="Profile Avatar"
             style={{
               width: '110px',
@@ -139,9 +138,6 @@ export default function Home() {
               objectFit: 'cover',
               border: '3px solid #5865F2',
               boxShadow: '0 0 25px rgba(88, 101, 242, 0.5)',
-            }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://cdn.discordapp.com/embed/avatars/0.png';
             }}
           />
         </div>
@@ -171,7 +167,7 @@ export default function Home() {
           style={{
             display: 'flex',
             gap: '12px',
-            marginBottom: '14px',
+            marginBottom: '12px',
             width: '100%',
             justifyContent: 'center',
           }}
@@ -239,7 +235,6 @@ export default function Home() {
             fontWeight: '500',
             marginBottom: '20px',
             textAlign: 'center',
-            letterSpacing: '0.3px',
           }}
         >
           yazılım öğreniyorum...
@@ -308,6 +303,6 @@ export default function Home() {
           />
         ))}
       </div>
-    </div>
+    </main>
   );
 }
