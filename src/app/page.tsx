@@ -1,15 +1,21 @@
-''use client';
+'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
-  const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(20));
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [avatarUrl, setAvatarUrl] = useState<string>('https://cdn.discordapp.com/embed/avatars/0.png');
+  const [volume, setVolume] = useState<number>(0.5); // Varsayılan ses %50
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [audioHeights, setAudioHeights] = useState<number[]>(Array(24).fill(10));
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   const DISCORD_ID = '1532683555631665166';
 
+  // Discord Profil Resmini Çekme
   useEffect(() => {
     fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
       .then((res) => res.json())
@@ -30,25 +36,97 @@ export default function Home() {
       });
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAudioHeights(
-        Array.from({ length: 24 }, () => Math.floor(Math.random() * 60) + 15)
-      );
-    }, 150);
+  // Web Audio API ile Gerçek Ses Analizi (Ekolayzır)
+  const initAudioAnalysis = () => {
+    if (audioCtxRef.current || !videoRef.current) return;
 
-    return () => clearInterval(interval);
-  }, []);
+    try {
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const audioCtx = new AudioContextClass();
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64; // 32 frekans aralığı yakalar
 
-  const toggleSound = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      const source = audioCtx.createMediaElementSource(videoRef.current);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      audioCtxRef.current = audioCtx;
+      analyserRef.current = analyser;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateData = () => {
+        analyser.getByteFrequencyData(dataArray);
+        
+        // 24 tane devasa çubuk için frekans verilerini alıyoruz
+        const heights: number[] = [];
+        for (let i = 0; i < 24; i++) {
+          const val = dataArray[i % bufferLength] || 0;
+          // Ses ne kadar yüksekse o kadar uzun olur (Maksimum ~250px-300px yüksekliğe kadar çıkar)
+          const scaledHeight = Math.max(10, (val / 255) * 260);
+          heights.push(scaledHeight);
+        }
+        setAudioHeights(heights);
+
+        animationFrameRef.current = requestAnimationFrame(updateData);
+      };
+
+      updateData();
+    } catch (e) {
+      console.log('AudioContext başlatılamadı:', e);
     }
   };
 
+  // Sayfaya ilk tıklamada AudioContext izinlerini aktifleştir
+  const handleUserInteraction = () => {
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    } else if (!audioCtxRef.current) {
+      initAudioAnalysis();
+    }
+  };
+
+  // Ses Kaydırıcısı (Volume Slider) Değişimi
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVol = parseFloat(e.target.value);
+    setVolume(newVol);
+    if (videoRef.current) {
+      videoRef.current.volume = newVol;
+      videoRef.current.muted = newVol === 0;
+      setIsMuted(newVol === 0);
+    }
+    handleUserInteraction();
+  };
+
+  // Mute / Unmute Butonu
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const nextMuteState = !isMuted;
+      videoRef.current.muted = nextMuteState;
+      setIsMuted(nextMuteState);
+      if (!nextMuteState && volume === 0) {
+        setVolume(0.5);
+        videoRef.current.volume = 0.5;
+      }
+    }
+    handleUserInteraction();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+      }
+    };
+  }, []);
+
   return (
     <main
+      onClick={handleUserInteraction}
       style={{
         height: '100vh',
         width: '100vw',
@@ -68,8 +146,8 @@ export default function Home() {
         ref={videoRef}
         autoPlay
         loop
-        muted={isMuted}
         playsInline
+        crossOrigin="anonymous"
         style={{
           position: 'absolute',
           top: 0,
@@ -84,31 +162,58 @@ export default function Home() {
         <source src="/background.mp4" type="video/mp4" />
       </video>
 
-      {/* Ses Aç/Kapat Butonu */}
-      <button
-        onClick={toggleSound}
-        type="button"
+      {/* Sol Üst - Gelişmiş Ses Kontrol Paneli */}
+      <div
         style={{
           position: 'absolute',
           top: '20px',
           left: '20px',
           zIndex: 20,
           backgroundColor: 'rgba(22, 27, 34, 0.85)',
-          backdropFilter: 'blur(10px)',
+          backdropFilter: 'blur(12px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
-          color: '#fff',
-          padding: '10px 16px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          fontWeight: '600',
-          fontSize: '14px',
+          padding: '10px 18px',
+          borderRadius: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '12px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
         }}
       >
-        {isMuted ? '🔇 Sesi Aç' : '🔊 Sesi Kapat'}
-      </button>
+        <button
+          onClick={toggleMute}
+          type="button"
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '18px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {isMuted || volume === 0 ? '🔇' : volume > 0.5 ? '🔊' : '🔉'}
+        </button>
+
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={isMuted ? 0 : volume}
+          onChange={handleVolumeChange}
+          style={{
+            width: '100px',
+            cursor: 'pointer',
+            accentColor: '#8b5cf6',
+          }}
+        />
+
+        <span style={{ color: '#fff', fontSize: '12px', fontWeight: '600', width: '35px' }}>
+          {isMuted ? '0%' : `${Math.round(volume * 100)}%`}
+        </span>
+      </div>
 
       {/* Ortadaki Profil Kartı */}
       <div
@@ -250,7 +355,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sol Alt Equalizer */}
+      {/* Sol Alt Dev Ekolayzır (4x - 5x Büyütülmüş) */}
       <div
         style={{
           position: 'absolute',
@@ -258,8 +363,8 @@ export default function Home() {
           left: 0,
           display: 'flex',
           alignItems: 'flex-end',
-          gap: '4px',
-          padding: '0 20px',
+          gap: '8px',
+          padding: '0 30px',
           zIndex: 10,
         }}
       >
@@ -267,17 +372,18 @@ export default function Home() {
           <div
             key={`left-${i}`}
             style={{
-              width: '12px',
-              height: `${height}px`,
+              width: '28px', // Genişlik 4-5 katına çıkarıldı (12px -> 28px)
+              height: `${height}px`, // Yükseklik ses seviyesine duyarlı ve devasa
               background: 'linear-gradient(to top, #3b82f6, #8b5cf6)',
-              borderRadius: '4px 4px 0 0',
-              transition: 'height 0.15s ease',
+              borderRadius: '8px 8px 0 0',
+              transition: 'height 0.05s ease',
+              boxShadow: '0 0 15px rgba(139, 92, 246, 0.6)',
             }}
           />
         ))}
       </div>
 
-      {/* Sağ Alt Equalizer */}
+      {/* Sağ Alt Dev Ekolayzır (4x - 5x Büyütülmüş) */}
       <div
         style={{
           position: 'absolute',
@@ -285,8 +391,8 @@ export default function Home() {
           right: 0,
           display: 'flex',
           alignItems: 'flex-end',
-          gap: '4px',
-          padding: '0 20px',
+          gap: '8px',
+          padding: '0 30px',
           zIndex: 10,
         }}
       >
@@ -294,11 +400,12 @@ export default function Home() {
           <div
             key={`right-${i}`}
             style={{
-              width: '12px',
-              height: `${height}px`,
+              width: '28px', // Genişlik 4-5 katına çıkarıldı (12px -> 28px)
+              height: `${height}px`, // Yükseklik ses seviyesine duyarlı ve devasa
               background: 'linear-gradient(to top, #8b5cf6, #ec4899)',
-              borderRadius: '4px 4px 0 0',
-              transition: 'height 0.15s ease',
+              borderRadius: '8px 8px 0 0',
+              transition: 'height 0.05s ease',
+              boxShadow: '0 0 15px rgba(236, 72, 153, 0.6)',
             }}
           />
         ))}
