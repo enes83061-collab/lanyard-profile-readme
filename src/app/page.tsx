@@ -17,7 +17,7 @@ export default function Home() {
 
   // Discord Profil Resmini Çekme
   useEffect(() => {
-    20 |  fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
  .then((res) => res.json())
  .then((data: any) => {
   if (data?.data?.discord_user?.avatar) {
